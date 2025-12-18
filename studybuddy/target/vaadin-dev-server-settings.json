@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/frontend/generated/jar-resources",
+  "staticOutput": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/target/classes/META-INF/VAADIN/config",
+  "frontendBundleOutput": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/target/classes/META-INF/VAADIN/webapp",
+  "devBundleOutput": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/target/dev-bundle/webapp",
+  "devBundleStatsOutput": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/target/dev-bundle/config",
+  "jarResourcesFolder": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/frontend/generated/jar-resources",
+  "themeName": "",
+  "clientServiceWorkerSource": "/Users/alpha/Desktop/ESS_Finalprojekt/studybuddy/target/sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}
