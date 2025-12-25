@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Initializes the database with sample data for demonstration purposes.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j

@@ -19,10 +19,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for TaskService business logic methods.
- * Tests Business Logic 3 (Progress Roll-up) and Business Logic 4 (Task Prioritization).
- */
 @SpringBootTest
 @Transactional
 class TaskServiceTest {
@@ -44,7 +40,6 @@ class TaskServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Create test student
         testStudent = StudentProfile.builder()
                 .name("Test Student")
                 .email("test@unisg.ch")
@@ -52,7 +47,6 @@ class TaskServiceTest {
                 .build();
         testStudent = studentProfileRepository.save(testStudent);
 
-        // Create test course
         testCourse = Course.builder()
                 .title("Test Course")
                 .term("Fall 2025")
@@ -62,10 +56,8 @@ class TaskServiceTest {
         testCourse = courseRepository.save(testCourse);
     }
 
-    // ==================== BUSINESS LOGIC 3: PROGRESS ROLL-UP ====================
-
     @Test
-    @DisplayName("Progress Roll-up: Empty course shows 0% completion")
+    @DisplayName("Empty course shows 0% completion")
     void testProgressRollup_EmptyCourse_ReturnsZeroPercent() {
         ProgressResult result = taskService.calculateProgress(testCourse.getId());
         
@@ -78,9 +70,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Progress Roll-up: All tasks completed shows 100%")
+    @DisplayName("All tasks completed shows 100%")
     void testProgressRollup_AllCompleted_Returns100Percent() {
-        // Create 3 completed tasks
         for (int i = 0; i < 3; i++) {
             Task task = Task.builder()
                     .title("Task " + i)
@@ -100,9 +91,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Progress Roll-up: Mixed completion shows correct percentage")
+    @DisplayName("Mixed completion shows correct percentage")
     void testProgressRollup_MixedCompletion_ReturnsCorrectPercentage() {
-        // Create 2 completed tasks
         for (int i = 0; i < 2; i++) {
             Task task = Task.builder()
                     .title("Completed Task " + i)
@@ -113,7 +103,6 @@ class TaskServiceTest {
             taskRepository.save(task);
         }
         
-        // Create 2 incomplete tasks
         for (int i = 0; i < 2; i++) {
             Task task = Task.builder()
                     .title("Pending Task " + i)
@@ -133,9 +122,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Progress Roll-up: No completed tasks shows 0%")
+    @DisplayName("No completed tasks shows 0%")
     void testProgressRollup_NoneCompleted_ReturnsZeroPercent() {
-        // Create 3 incomplete tasks
         for (int i = 0; i < 3; i++) {
             Task task = Task.builder()
                     .title("Task " + i)
@@ -155,9 +143,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Progress Roll-up: One of three completed shows 33.33%")
+    @DisplayName("One of three completed shows 33%")
     void testProgressRollup_OneOfThree_ReturnsCorrectPercentage() {
-        // Create 1 completed task
         Task completed = Task.builder()
                 .title("Completed Task")
                 .course(testCourse)
@@ -166,7 +153,6 @@ class TaskServiceTest {
                 .build();
         taskRepository.save(completed);
         
-        // Create 2 incomplete tasks
         for (int i = 0; i < 2; i++) {
             Task task = Task.builder()
                     .title("Pending Task " + i)
@@ -185,12 +171,9 @@ class TaskServiceTest {
         assertTrue(result.getCompletionPercentage() >= 33.0 && result.getCompletionPercentage() <= 34.0);
     }
 
-    // ==================== BUSINESS LOGIC 4: TASK PRIORITIZATION ====================
-
     @Test
-    @DisplayName("Task Prioritization: Overdue tasks have highest priority")
+    @DisplayName("Overdue tasks have highest priority")
     void testTaskPrioritization_OverdueTasks_HighestPriority() {
-        // Create overdue task (yesterday)
         Task overdueTask = Task.builder()
                 .title("Overdue Task")
                 .course(testCourse)
@@ -200,7 +183,6 @@ class TaskServiceTest {
                 .build();
         taskRepository.save(overdueTask);
         
-        // Create future task (in 10 days)
         Task futureTask = Task.builder()
                 .title("Future Task")
                 .course(testCourse)
@@ -218,9 +200,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Task Prioritization: Closer due date has higher priority")
+    @DisplayName("Closer due date has higher priority")
     void testTaskPrioritization_CloserDueDate_HigherPriority() {
-        // Create task due in 3 days
         Task soonTask = Task.builder()
                 .title("Soon Task")
                 .course(testCourse)
@@ -230,7 +211,6 @@ class TaskServiceTest {
                 .build();
         taskRepository.save(soonTask);
         
-        // Create task due in 30 days
         Task laterTask = Task.builder()
                 .title("Later Task")
                 .course(testCourse)
@@ -248,9 +228,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Task Prioritization: Higher effort increases priority")
+    @DisplayName("Higher effort increases priority")
     void testTaskPrioritization_HigherEffort_HigherPriority() {
-        // Create two tasks with same due date but different effort
         Task highEffortTask = Task.builder()
                 .title("High Effort Task")
                 .course(testCourse)
@@ -277,19 +256,17 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Task Prioritization: Completed tasks are excluded")
+    @DisplayName("Completed tasks are excluded")
     void testTaskPrioritization_ExcludesCompletedTasks() {
-        // Create completed task
         Task completedTask = Task.builder()
                 .title("Completed Task")
                 .course(testCourse)
-                .dueDate(LocalDate.now().minusDays(1)) // Would be highest priority if incomplete
+                .dueDate(LocalDate.now().minusDays(1))
                 .estimatedEffortHours(10)
                 .completed(true)
                 .build();
         taskRepository.save(completedTask);
         
-        // Create incomplete task
         Task pendingTask = Task.builder()
                 .title("Pending Task")
                 .course(testCourse)
@@ -306,9 +283,8 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Task Prioritization: Tasks without due date have lowest urgency from date")
+    @DisplayName("Tasks without due date have lowest urgency")
     void testTaskPrioritization_NoDueDate_LowerPriority() {
-        // Create task with due date
         Task withDueDate = Task.builder()
                 .title("With Due Date")
                 .course(testCourse)
@@ -318,7 +294,6 @@ class TaskServiceTest {
                 .build();
         taskRepository.save(withDueDate);
         
-        // Create task without due date but same effort
         Task noDueDate = Task.builder()
                 .title("No Due Date")
                 .course(testCourse)
@@ -331,15 +306,12 @@ class TaskServiceTest {
         List<Task> prioritized = taskService.getTasksByPriority(testCourse.getId());
         
         assertEquals(2, prioritized.size());
-        // Task with due date should be higher priority
         assertEquals("With Due Date", prioritized.get(0).getTitle());
     }
 
     @Test
-    @DisplayName("Task Prioritization: Priority score calculation is correct")
+    @DisplayName("Priority score calculation is correct")
     void testTaskPrioritization_PriorityScoreCalculation() {
-        // Task due today with 5 hours effort
-        // Score = (100 - 0) + (5 * 2) = 100 + 10 = 110
         Task todayTask = Task.builder()
                 .title("Today Task")
                 .course(testCourse)
@@ -351,8 +323,6 @@ class TaskServiceTest {
         double score = todayTask.calculatePriorityScore();
         assertEquals(110.0, score);
         
-        // Task due in 50 days with 10 hours effort
-        // Score = (100 - 50) + (10 * 2) = 50 + 20 = 70
         Task futureTask = Task.builder()
                 .title("Future Task")
                 .course(testCourse)
@@ -364,7 +334,6 @@ class TaskServiceTest {
         double futureScore = futureTask.calculatePriorityScore();
         assertEquals(70.0, futureScore);
         
-        // Verify today task has higher priority
         assertTrue(score > futureScore);
     }
 }

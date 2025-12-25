@@ -1,0 +1,272 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage{tcolorbox}
+
+\geometry{margin=1.8cm, top=2cm, bottom=1.8cm}
+
+\definecolor{usgblue}{RGB}{0, 82, 147}
+\definecolor{lightblue}{RGB}{230, 242, 255}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{usgblue}{\textbf{Design of Software Systems -- Assignment 6}}}
+\fancyhead[R]{\small\textcolor{usgblue}{University of St.Gallen}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\normalsize\bfseries\color{usgblue}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\small\bfseries}{\thesubsection}{0.8em}{}
+\titlespacing{\section}{0pt}{10pt}{5pt}
+\titlespacing{\subsection}{0pt}{6pt}{3pt}
+
+\setlength{\parskip}{3pt}
+\setlist[itemize]{noitemsep, topsep=2pt, leftmargin=*}
+\setlist[enumerate]{noitemsep, topsep=2pt, leftmargin=*}
+
+\begin{document}
+
+% Title Box
+\begin{tcolorbox}[colback=lightblue, colframe=usgblue, arc=3mm, boxrule=1pt]
+\begin{center}
+    {\LARGE\textbf{\textcolor{usgblue}{StudyBuddy}}}\\[0.15cm]
+    {\large Full-Stack Spring Boot Application}\\[0.3cm]
+    {\normalsize\textbf{Design of Software Systems -- Assignment 6}}\\[0.1cm]
+    {\normalsize Jamie Maier \& Arthur Van Petegem}\\
+    {\small University of St.Gallen | Fall Semester 2025}
+\end{center}
+\end{tcolorbox}
+
+\vspace{0.3cm}
+
+\begin{multicols}{2}
+
+\section{Domain Description}
+
+\textbf{StudyBuddy} is a lightweight study planner designed for university students. The application helps students organize their academic workload by:
+\begin{itemize}
+    \item Managing course enrollments and preferences
+    \item Scheduling and tracking study sessions
+    \item Creating and prioritizing tasks
+    \item Monitoring progress across courses
+\end{itemize}
+
+\section{Business Logic (4 Methods)}
+
+\begin{enumerate}
+    \item \textbf{Daily Load Check}\\
+    Sums study session durations per day and warns if a new session would exceed the preferred daily workload defined in CoursePreference.
+    
+    \item \textbf{Clash Detection}\\
+    Detects overlapping study sessions for the same course and flags scheduling conflicts before saving.
+    
+    \item \textbf{Progress Roll-up}\\
+    Aggregates completed vs. total tasks per course and computes a completion percentage.
+    
+    \item \textbf{Task Prioritization}\\
+    Calculates priority score using formula:\\
+    $\text{score} = (100 - \text{daysUntilDue}) + (\text{effort} \times 2)$\\
+    Orders tasks by descending score.
+\end{enumerate}
+
+\end{multicols}
+
+\section{Model Classes \& Entity Relationships}
+
+\begin{multicols}{2}
+\noindent\textbf{6 Entity Classes:}
+\begin{itemize}
+    \item \textbf{StudentProfile}: User identity (name, email, locale, settings)
+    \item \textbf{Course}: Academic course (title, term, instructor, description)
+    \item \textbf{CoursePreference}: Study preferences (daily workload limit, notifications, priority level)
+    \item \textbf{CourseNote}: Notes and key points for a course
+    \item \textbf{StudySession}: Scheduled session (start time, duration, location, completion status)
+    \item \textbf{Task}: Assignment (title, type, due date, estimated effort, completion status)
+\end{itemize}
+
+\columnbreak
+
+\noindent\textbf{Relationships:}
+\begin{itemize}
+    \item \textbf{One-to-One}: Course $\leftrightarrow$ CoursePreference
+    \item \textbf{One-to-One}: Course $\leftrightarrow$ CourseNote
+    \item \textbf{One-to-Many}: StudentProfile $\rightarrow$ Courses
+    \item \textbf{One-to-Many}: Course $\rightarrow$ StudySessions
+    \item \textbf{One-to-Many}: Course $\rightarrow$ Tasks
+\end{itemize}
+
+\vspace{0.3cm}
+\noindent\textbf{Persistence Configuration:}
+\begin{itemize}
+    \item Database: H2 In-Memory
+    \item ORM: Spring Data JPA + Hibernate 6.4
+    \item DDL: Auto-generated (\texttt{create-drop})
+\end{itemize}
+\end{multicols}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\textwidth]{../UML_Diagram.png}
+    \vspace{-0.2cm}
+    \caption{UML Class Diagram showing all 6 entities and their relationships (generated via PlantUML)}
+\end{figure}
+
+\section{REST Interface}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET, POST & /api/students & List all / Create student profile \\
+GET, POST & /api/courses & List all / Create course \\
+GET, PUT, DELETE & /api/tasks/\{id\} & CRUD operations on tasks \\
+GET & /api/courses/\{id\}/progress & \textbf{BL3: Progress Roll-up} \\
+GET & /api/tasks/prioritized & \textbf{BL4: Task Prioritization} \\
+POST & /api/sessions/check-load & \textbf{BL1: Daily Load Check} \\
+POST & /api/sessions/check-clash & \textbf{BL2: Clash Detection} \\
+\hline
+\end{tabularx}
+\caption{REST API Endpoints with Business Logic integration}
+\end{table}
+
+\section{User Interface (Vaadin 24)}
+
+The web-based UI was built using \textbf{Vaadin 24} with a responsive sidebar navigation layout featuring 5 views.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../Dashboard.png}
+    \vspace{-0.2cm}
+    \caption{Dashboard: Statistics cards, course progress bars, and priority-sorted task list}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../Courses.png}
+        \caption{Courses View with progress indicators}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../tasks.png}
+        \caption{Tasks View with priority sorting}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../Study Session.png}
+        \caption{Study Sessions with scheduling dialog}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../My profile.png}
+        \caption{Profile View for user settings}
+    \end{minipage}
+\end{figure}
+
+\section{Unit Tests}
+
+We implemented \textbf{21 unit tests} using JUnit 5 to verify all 4 business logic methods:
+
+\begin{multicols}{2}
+\noindent\textbf{StudySessionServiceTest (9 tests):}
+\begin{itemize}
+    \item Session within limit returns OK
+    \item Session exceeding limit returns warning
+    \item Empty day accepts new session
+    \item Session exactly at limit is OK
+    \item Non-overlapping sessions: no clash
+    \item Overlapping sessions detected
+    \item Session inside another: clash
+    \item Adjacent sessions: no clash
+    \item Multiple clashes detected
+\end{itemize}
+
+\columnbreak
+
+\noindent\textbf{TaskServiceTest (11 tests):}
+\begin{itemize}
+    \item Empty course shows 0\%
+    \item All completed shows 100\%
+    \item Mixed completion: correct \%
+    \item No completed tasks: 0\%
+    \item One of three: ~33\%
+    \item Overdue tasks: highest priority
+    \item Closer due date: higher priority
+    \item Higher effort: higher priority
+    \item Completed tasks excluded
+    \item No due date: lower priority
+    \item Priority score calculation correct
+\end{itemize}
+\end{multicols}
+
+\section{Example User Workflow}
+
+\begin{enumerate}
+    \item User opens \textbf{Dashboard} $\rightarrow$ sees overview: 4 courses, 9 pending tasks, 1 completed
+    \item Navigates to \textbf{Tasks} $\rightarrow$ clicks ``Sort by Priority'' to see most urgent tasks first
+    \item Identifies ``Problem Set 5'' due in 2 days $\rightarrow$ decides to schedule a study session
+    \item Goes to \textbf{Study Sessions} $\rightarrow$ clicks ``Schedule Session'' button
+    \item Selects ``Mathematics for Business'' course, picks today at 14:00 for 90 minutes
+    \item \textbf{Warning appears:} ``Adding this session would exceed your daily limit by 30 minutes''
+    \item User reduces duration to 60 minutes $\rightarrow$ warning disappears, saves successfully
+    \item Returns to Dashboard $\rightarrow$ stats updated, completes task via checkbox $\rightarrow$ progress bar updates
+\end{enumerate}
+
+\section{Difficulties \& Solutions}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Challenge} & \textbf{Solution} \\
+\hline
+LazyInitializationException in Vaadin views & Changed \texttt{FetchType.LAZY} to \texttt{FetchType.EAGER} for entity relationships accessed by the UI layer \\
+\hline
+Bidirectional entity relationships causing JSON recursion & Designed entity associations with proper fetch strategies and avoided circular references in REST responses \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Work Distribution}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{11cm}|}
+\hline
+\textbf{Jamie Maier} & Domain model design, Entity classes, Business logic implementation (all 4 methods), Service layer architecture, Unit test development \\
+\hline
+\textbf{Arthur Van Petegem} & REST controller endpoints, Vaadin UI views and components, Project configuration, Integration testing \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent\textit{Both team members collaborated on architectural decisions, code review, and debugging sessions throughout the project.}
+
+\vspace{0.5cm}
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}\\[0.15cm]
+{\small Submitted: December 2025 | Design of Software Systems | University of St.Gallen}
+\end{center}
+
+\end{document}

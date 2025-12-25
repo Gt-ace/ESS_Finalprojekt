@@ -1,0 +1,145 @@
+@startuml StudyBuddy Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "ch.unisg.studybuddy.model" {
+    
+    class StudentProfile {
+        -Long id
+        -String name
+        -String email
+        -String locale
+        -String settings
+        --
+        +getId()
+        +setId()
+        +getName()
+        +setName()
+        +getEmail()
+        +setEmail()
+    }
+    
+    class Course {
+        -Long id
+        -String title
+        -String term
+        -String instructor
+        -String description
+        -StudentProfile studentProfile
+        -CoursePreference preference
+        -CourseNote note
+        -List<StudySession> studySessions
+        -List<Task> tasks
+        --
+        +getId()
+        +getTitle()
+        +getTerm()
+        +getInstructor()
+    }
+    
+    class CoursePreference {
+        -Long id
+        -Course course
+        -int preferredDailyWorkloadMinutes
+        -boolean notificationsEnabled
+        -int priorityLevel
+        --
+        +getId()
+        +getPreferredDailyWorkloadMinutes()
+        +isNotificationsEnabled()
+        +getPriorityLevel()
+    }
+    
+    class CourseNote {
+        -Long id
+        -Course course
+        -String summary
+        -String keyPoints
+        -LocalDateTime lastUpdated
+        --
+        +getId()
+        +getSummary()
+        +getKeyPoints()
+        +getLastUpdated()
+    }
+    
+    class StudySession {
+        -Long id
+        -Course course
+        -LocalDateTime startTime
+        -int durationMinutes
+        -String location
+        -String notes
+        -boolean completed
+        --
+        +getId()
+        +getStartTime()
+        +getDurationMinutes()
+        +isCompleted()
+    }
+    
+    class Task {
+        -Long id
+        -Course course
+        -String title
+        -String description
+        -TaskType taskType
+        -LocalDate dueDate
+        -int estimatedEffortHours
+        -boolean completed
+        --
+        +getId()
+        +getTitle()
+        +getDueDate()
+        +isCompleted()
+    }
+    
+    enum TaskType {
+        READING
+        EXERCISE
+        PROJECT
+        EXAM_PREP
+        ASSIGNMENT
+        OTHER
+    }
+}
+
+' Relationships
+StudentProfile "1" --o "0..*" Course : has >
+Course "1" --|| "1" CoursePreference : has >
+Course "1" --|| "0..1" CourseNote : has >
+Course "1" --o "0..*" StudySession : contains >
+Course "1" --o "0..*" Task : contains >
+Task --> TaskType : uses >
+
+note right of StudentProfile
+  <b>One-to-Many:</b>
+  A student can have
+  multiple courses
+end note
+
+note right of CoursePreference
+  <b>One-to-One:</b>
+  Each course has exactly
+  one preference record
+end note
+
+note bottom of Task
+  <b>Business Logic:</b>
+  - Progress Roll-up (% complete)
+  - Task Prioritization (score)
+end note
+
+note bottom of StudySession
+  <b>Business Logic:</b>
+  - Daily Load Check
+  - Clash Detection
+end note
+
+@enduml
+

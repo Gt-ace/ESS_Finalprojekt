@@ -6,10 +6,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-/**
- * Represents notes and key points for a specific course.
- * Has a one-to-one relationship with Course.
- */
 @Entity
 @Table(name = "course_notes")
 @Getter

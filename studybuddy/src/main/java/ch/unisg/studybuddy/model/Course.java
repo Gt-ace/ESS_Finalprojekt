@@ -8,11 +8,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents an academic course that a student is enrolled in.
- * Has one-to-one relationships with CoursePreference and CourseNote,
- * and one-to-many relationships with StudySession and Task.
- */
 @Entity
 @Table(name = "courses")
 @Getter

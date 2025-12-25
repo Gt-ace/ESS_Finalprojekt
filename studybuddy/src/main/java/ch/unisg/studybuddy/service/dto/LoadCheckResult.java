@@ -5,43 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Result of a daily workload check for a study session.
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoadCheckResult {
     
-    /**
-     * Whether the proposed session would exceed the daily workload limit.
-     */
     private boolean exceedsLimit;
-    
-    /**
-     * Current total minutes already scheduled for the day.
-     */
     private int currentMinutes;
-    
-    /**
-     * Proposed additional minutes.
-     */
     private int proposedMinutes;
-    
-    /**
-     * Total minutes if the proposed session is added.
-     */
     private int totalMinutes;
-    
-    /**
-     * The preferred daily limit in minutes.
-     */
     private int dailyLimitMinutes;
-    
-    /**
-     * Warning message if limit would be exceeded.
-     */
     private String warningMessage;
     
     public static LoadCheckResult ok(int currentMinutes, int proposedMinutes, int dailyLimit) {

@@ -72,10 +72,6 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.save(task);
     }
 
-    /**
-     * BUSINESS LOGIC 3: Progress Roll-up
-     * Aggregates completed tasks per course and computes a completion percentage.
-     */
     @Override
     public ProgressResult calculateProgress(Long courseId) {
         Course course = courseRepository.findById(courseId)
@@ -87,16 +83,6 @@ public class TaskServiceImpl implements TaskService {
         return ProgressResult.calculate(courseId, course.getTitle(), totalTasks, completedTasks);
     }
 
-    /**
-     * BUSINESS LOGIC 4: Task Prioritization
-     * Calculates a priority score based on due date proximity and estimated effort,
-     * then returns tasks ordered by this score (highest priority first).
-     * 
-     * Priority Score Formula:
-     * - Base score from due date: (100 - daysUntilDue), max 100 for overdue
-     * - Effort multiplier: estimatedEffortHours * 2
-     * - Total: daysWeight + effortWeight
-     */
     @Override
     public List<Task> getTasksByPriority(Long courseId) {
         List<Task> tasks;
@@ -109,7 +95,6 @@ public class TaskServiceImpl implements TaskService {
                     .collect(Collectors.toList());
         }
         
-        // Sort by priority score (descending - highest priority first)
         return tasks.stream()
                 .sorted(Comparator.comparingDouble(Task::calculatePriorityScore).reversed())
                 .collect(Collectors.toList());

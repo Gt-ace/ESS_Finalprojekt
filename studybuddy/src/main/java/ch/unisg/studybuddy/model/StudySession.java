@@ -8,10 +8,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-/**
- * Represents a planned or completed study session.
- * Has a many-to-one relationship with Course.
- */
 @Entity
 @Table(name = "study_sessions")
 @Getter
@@ -29,9 +25,6 @@ public class StudySession {
     @Column(nullable = false)
     private LocalDateTime startTime;
 
-    /**
-     * Duration of the study session in minutes.
-     */
     @Min(value = 1, message = "Duration must be at least 1 minute")
     @Column(nullable = false)
     private Integer durationMinutes;
@@ -51,16 +44,10 @@ public class StudySession {
     @JsonIgnore
     private Course course;
 
-    /**
-     * Returns the end time of this study session.
-     */
     public LocalDateTime getEndTime() {
         return startTime != null ? startTime.plusMinutes(durationMinutes) : null;
     }
 
-    /**
-     * Checks if this session overlaps with another session.
-     */
     public boolean overlapsWith(StudySession other) {
         if (other == null || this.startTime == null || other.startTime == null) {
             return false;

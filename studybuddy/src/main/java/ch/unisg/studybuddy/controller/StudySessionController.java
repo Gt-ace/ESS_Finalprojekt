@@ -82,19 +82,7 @@ public class StudySessionController {
         return ResponseEntity.noContent().build();
     }
 
-    // ============ BUSINESS LOGIC ENDPOINTS ============
 
-    /**
-     * POST /api/sessions/check-load
-     * Business Logic 1: Daily Load Check
-     * 
-     * Request body:
-     * {
-     *   "courseId": 1,
-     *   "date": "2025-01-15",
-     *   "proposedDurationMinutes": 60
-     * }
-     */
     @PostMapping("/check-load")
     public ResponseEntity<LoadCheckResult> checkLoad(@RequestBody LoadCheckRequest request) {
         LoadCheckResult result = studySessionService.checkDailyLoad(
@@ -105,10 +93,7 @@ public class StudySessionController {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * POST /api/sessions/check-clash
-     * Business Logic 2: Clash Detection
-     */
+
     @PostMapping("/check-clash")
     public ResponseEntity<ClashCheckResult> checkClash(@RequestBody ClashCheckRequest request) {
         StudySession proposedSession = StudySession.builder()
@@ -124,7 +109,7 @@ public class StudySessionController {
         return ResponseEntity.ok(result);
     }
 
-    // ============ REQUEST DTOs ============
+
 
     @lombok.Data
     public static class LoadCheckRequest {
@@ -137,7 +122,7 @@ public class StudySessionController {
     @lombok.Data
     public static class ClashCheckRequest {
         private Long courseId;
-        private Long sessionId; // Optional, for updates
+        private Long sessionId;
         private java.time.LocalDateTime startTime;
         private int durationMinutes;
     }

@@ -69,25 +69,15 @@ public class StudySessionServiceImpl implements StudySessionService {
         studySessionRepository.deleteById(id);
     }
 
-    /**
-     * BUSINESS LOGIC 1: Daily Load Check
-     * Sums study session durations per day and warns if a new session exceeds
-     * the preferred workload defined in CoursePreference.
-     */
     @Override
     public LoadCheckResult checkDailyLoad(Long courseId, LocalDate date, int proposedDurationMinutes) {
-        // Get the course preference for daily limit
         CoursePreference preference = coursePreferenceRepository.findByCourseId(courseId)
                 .orElse(CoursePreference.builder()
-                        .preferredDailyWorkloadMinutes(120) // Default 2 hours
+                        .preferredDailyWorkloadMinutes(120)
                         .build());
         
         int dailyLimit = preference.getPreferredDailyWorkloadMinutes();
-        
-        // Calculate current total for the day
         int currentTotal = getTotalMinutesForCourseOnDate(courseId, date);
-        
-        // Check if adding the proposed session would exceed the limit
         int newTotal = currentTotal + proposedDurationMinutes;
         
         if (newTotal > dailyLimit) {
@@ -97,17 +87,12 @@ public class StudySessionServiceImpl implements StudySessionService {
         return LoadCheckResult.ok(currentTotal, proposedDurationMinutes, dailyLimit);
     }
 
-    /**
-     * BUSINESS LOGIC 2: Clash Detection
-     * Detects and flags overlapping StudySessions for the same course.
-     */
     @Override
     public ClashCheckResult checkForClashes(Long courseId, StudySession proposedSession) {
         if (proposedSession.getStartTime() == null || proposedSession.getDurationMinutes() == null) {
             return ClashCheckResult.noClash();
         }
         
-        // Get all sessions for this course on the same day
         LocalDate sessionDate = proposedSession.getStartTime().toLocalDate();
         LocalDateTime startOfDay = sessionDate.atStartOfDay();
         LocalDateTime endOfDay = sessionDate.atTime(LocalTime.MAX);
@@ -115,14 +100,11 @@ public class StudySessionServiceImpl implements StudySessionService {
         List<StudySession> existingSessions = studySessionRepository
                 .findByCourseIdAndTimeRange(courseId, startOfDay, endOfDay);
         
-        // Find clashing sessions
         List<StudySession> clashingSessions = new ArrayList<>();
         for (StudySession existing : existingSessions) {
-            // Skip if it's the same session (for updates)
             if (proposedSession.getId() != null && proposedSession.getId().equals(existing.getId())) {
                 continue;
             }
-            
             if (proposedSession.overlapsWith(existing)) {
                 clashingSessions.add(existing);
             }

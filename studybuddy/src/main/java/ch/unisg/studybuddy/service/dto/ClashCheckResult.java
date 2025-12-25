@@ -9,29 +9,17 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Result of a clash detection check for study sessions.
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClashCheckResult {
     
-    /**
-     * Whether any clashes were detected.
-     */
     private boolean hasClash;
     
-    /**
-     * List of sessions that clash with the proposed session.
-     */
     @Builder.Default
     private List<StudySession> clashingSessions = new ArrayList<>();
     
-    /**
-     * Warning message describing the clashes.
-     */
     private String warningMessage;
     
     public static ClashCheckResult noClash() {

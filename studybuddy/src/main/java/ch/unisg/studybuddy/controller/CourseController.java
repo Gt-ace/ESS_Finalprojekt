@@ -75,8 +75,6 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    // ============ COURSE PREFERENCE ENDPOINTS ============
-
     @GetMapping("/{courseId}/preference")
     public ResponseEntity<CoursePreference> getPreference(@PathVariable Long courseId) {
         return courseService.findPreferenceByCourseId(courseId)
@@ -95,8 +93,6 @@ public class CourseController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-    // ============ COURSE NOTE ENDPOINTS ============
 
     @GetMapping("/{courseId}/note")
     public ResponseEntity<CourseNote> getNote(@PathVariable Long courseId) {
@@ -117,12 +113,6 @@ public class CourseController {
         }
     }
 
-    // ============ BUSINESS LOGIC: PROGRESS ============
-
-    /**
-     * GET /api/courses/{id}/progress
-     * Business Logic 3: Progress Roll-up
-     */
     @GetMapping("/{id}/progress")
     public ResponseEntity<ProgressResult> getCourseProgress(@PathVariable Long id) {
         try {

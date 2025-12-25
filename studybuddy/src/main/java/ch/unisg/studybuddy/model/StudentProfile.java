@@ -8,10 +8,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents a student user of the StudyBuddy application.
- * A student can have multiple courses.
- */
 @Entity
 @Table(name = "student_profiles")
 @Getter

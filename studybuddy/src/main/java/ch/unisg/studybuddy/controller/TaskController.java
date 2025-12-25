@@ -24,7 +24,6 @@ public class TaskController {
             @RequestParam(required = false, defaultValue = "false") boolean ordered) {
         
         if (ordered) {
-            // Business Logic 4: Get tasks ordered by priority
             return ResponseEntity.ok(taskService.getTasksByPriority(courseId));
         }
         
@@ -47,21 +46,12 @@ public class TaskController {
         return ResponseEntity.ok(taskService.findByCourseId(courseId));
     }
 
-    /**
-     * GET /api/tasks/prioritized?courseId=...
-     * Business Logic 4: Task Prioritization
-     * Returns tasks ordered by priority score (due date proximity + effort)
-     */
     @GetMapping("/prioritized")
     public ResponseEntity<List<Task>> getTasksByPriority(
             @RequestParam(required = false) Long courseId) {
         return ResponseEntity.ok(taskService.getTasksByPriority(courseId));
     }
 
-    /**
-     * GET /api/tasks/student/{studentId}/prioritized
-     * Get all pending tasks for a student, ordered by priority
-     */
     @GetMapping("/student/{studentId}/prioritized")
     public ResponseEntity<List<Task>> getPendingTasksForStudent(@PathVariable Long studentId) {
         return ResponseEntity.ok(taskService.getPendingTasksByStudentPrioritized(studentId));
