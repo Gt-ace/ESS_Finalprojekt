@@ -1,3 +1,6 @@
+# PDF Files (Assignment documents)
+*.pdf
+
 # Maven
 studybuddy/target/
 pom.xml.tag
