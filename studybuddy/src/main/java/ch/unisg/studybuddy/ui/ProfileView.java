@@ -125,7 +125,7 @@ public class ProfileView extends VerticalLayout {
                 .set("box-shadow", "var(--lumo-box-shadow-s)")
                 .set("padding", "var(--lumo-space-l)");
 
-        H3 title = new H3("ℹ️ About StudyBuddy");
+        H3 title = new H3("About StudyBuddy");
         title.getStyle().set("margin-top", "0");
 
         Paragraph description = new Paragraph(
@@ -136,10 +136,7 @@ public class ProfileView extends VerticalLayout {
         );
         description.addClassNames(LumoUtility.TextColor.SECONDARY);
 
-        Paragraph version = new Paragraph("Version 1.0.0 | © 2025 Arthur Van Petegem & Jamie Maier");
-        version.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-
-        section.add(title, description, version);
+        section.add(title, description);
         return section;
     }
 
