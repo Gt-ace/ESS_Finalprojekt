@@ -1,54 +1,46 @@
 # StudyBuddy
 
-A lightweight study planner application built with Spring Boot and Vaadin for the Design of Software Systems course at University of St.Gallen.
-
-## Features
-
-- **Course Management**: Create, update, and delete courses with preferences and notes
-- **Task Tracking**: Manage tasks with priority scoring based on due date and effort
-- **Study Sessions**: Schedule and track study sessions with clash detection
-- **Progress Tracking**: Visual progress bars and completion percentages
-- **Professional UI**: Modern Vaadin-based web interface
-
-## Business Logic
-
-1. **Daily Load Check**: Warns when study sessions exceed preferred daily workload
-2. **Clash Detection**: Detects overlapping study sessions
-3. **Progress Roll-up**: Calculates completion percentage per course
-4. **Task Prioritization**: Orders tasks by priority score (due date + effort)
-
-## Tech Stack
-
-- Java 17
-- Spring Boot 3.2.1
-- Vaadin 24.3.3
-- Spring Data JPA
-- H2 In-Memory Database
-- Lombok
-- JUnit 5
-
-## Running the Application
+## How to Run
 
 ### Prerequisites
-- Java 17 installed
+- Java 17 or higher
 - Maven 3.6+
 
-### Quick Start
-
+### Development Mode
 ```bash
-# On macOS with multiple Java versions:
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)
-
-# Or use the provided script:
 ./run.sh
+```
 
-# Or manually:
+Or manually:
+```bash
 mvn spring-boot:run
 ```
 
-### Access the Application
+### Production Mode
+```bash
+# Build the executable JAR
+mvn clean package
 
-- **Web UI**: http://localhost:8080
+# Run the application
+java -jar target/studybuddy-1.0.0.jar
+```
+
+### Access the Application
+Open your browser at `http://localhost:8080/dashboard`
+
+### Troubleshooting
+If port 8080 is already in use, kill the existing process:
+
+**Windows:**
+```powershell
+netstat -ano | findstr :8080
+taskkill /PID <PID> /F
+```
+
+**macOS/Linux:**
+```bash
+lsof -ti:8080 | xargs kill -9
+```
 - **H2 Console**: http://localhost:8080/h2-console (JDBC URL: `jdbc:h2:mem:studybuddy`)
 
 ## REST API Endpoints
@@ -107,8 +99,3 @@ src/main/java/ch/unisg/studybuddy/
 ## Authors
 
 Arthur Van Petegem & Jamie Maier - University of St.Gallen
-
-## License
-
-This project is for educational purposes as part of the Design of Software Systems course.
-
